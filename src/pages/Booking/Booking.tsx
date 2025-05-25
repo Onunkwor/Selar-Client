@@ -21,20 +21,9 @@ const BookingPage = () => {
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
-  const [timeSlots, setTimeSlots] = useState([
-    // "09:00",
-    // "09:30",
-    // "10:00",
-    // "10:30",
-    // "11:00",
-    // "11:30",
-    // "14:00",
-    // "14:30",
-    // "15:00",
-    // "15:30",
-    // "16:00",
-    // "16:30",
-  ]);
+  const [timeSlots, setTimeSlots] = useState<{ availableSlots: string[] }>({
+    availableSlots: [],
+  });
 
   const [selectedTime, setSelectedTime] = useState("");
   const [summary, setSummary] = useState("");
@@ -68,7 +57,7 @@ const BookingPage = () => {
     if (!selectedTime || !summary) {
       setMessage("Please select a time slot and enter a summary");
       setMessageType("error");
-      return;
+      // setTimeSlots(response.data);
     }
 
     setIsLoading(true);
@@ -136,7 +125,7 @@ const BookingPage = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <Label className="text-sm font-medium mb-3 block">
                   Available Time Slots
                 </Label>
@@ -144,9 +133,9 @@ const BookingPage = () => {
                   <div className="flex items-center justify-center py-8">
                     <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   </div>
-                ) : timeSlots.length > 0 ? (
+                ) : timeSlots.availableSlots > 0 ? (
                   <div className="grid grid-cols-3 gap-2">
-                    {timeSlots.map((slot) => (
+                    {timeSlots.availableSlots.map((slot) => (
                       <Button
                         key={slot}
                         variant={selectedTime === slot ? "default" : "outline"}
@@ -167,7 +156,7 @@ const BookingPage = () => {
                     </AlertDescription>
                   </Alert>
                 )}
-              </div>
+              </div> */}
 
               {selectedTime && (
                 <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
