@@ -1,12 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ProtectedRoutes from "./ProtectedRoutes";
 import SignInPage from "@/pages/Auth/SignIn";
 import SignUpPage from "@/pages/Auth/SignUp";
 import BookingPage from "@/pages/Booking/Booking";
-import TokenProvider from "@/context/TokenContext";
-import Layout from "@/Layout/Layout";
 import Home from "@/pages/Home/Home";
+import ProtectedRoutes from "./ProtectedRoutes";
+import Profile from "@/pages/Profile/Profile";
 
 export const AppRouter = () => {
   const router = createBrowserRouter([
@@ -14,34 +13,21 @@ export const AppRouter = () => {
     { path: "/", element: <Home /> },
     { path: "/sign-in", element: <SignInPage /> },
     { path: "/sign-up", element: <SignUpPage /> },
-
-    // Protected Routes (Requires Authentication)
+    { path: "/booking/:id", element: <BookingPage /> },
+    // Protected Routes
     {
-      path: "/booking",
+      path: "/profile",
       element: (
         <ProtectedRoutes>
-          <Layout />
+          <Profile />
         </ProtectedRoutes>
       ),
-      children: [
-        {
-          path: "",
-          children: [
-            {
-              path: "",
-              element: <BookingPage />,
-            },
-          ],
-        },
-      ],
     },
   ]);
   const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-      <TokenProvider>
-        <RouterProvider router={router} />
-      </TokenProvider>
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 };

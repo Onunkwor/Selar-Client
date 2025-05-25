@@ -2,27 +2,22 @@ import { useState, useEffect } from "react";
 import {
   Calendar,
   Clock,
-  User,
   FileText,
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import axios from "axios";
+import { useParams } from "react-router-dom";
+import { UserButton } from "@clerk/clerk-react";
 
 const BookingPage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { id } = useParams();
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -48,17 +43,6 @@ const BookingPage = () => {
   const [messageType, setMessageType] = useState("info");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Simulate authentication check
-  useEffect(() => {
-    const checkAuth = () => {
-      // Simulate auth check - in real app this would be an API call
-      setTimeout(() => {
-        setIsAuthenticated(true);
-      }, 1000);
-    };
-    checkAuth();
-  }, []);
-
   useEffect(() => {
     fetchTimeSlots();
   }, []);
@@ -66,9 +50,9 @@ const BookingPage = () => {
   const fetchTimeSlots = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/calendar/timeslots",
+        `http://localhost:3000/calendar/timeslots/`,
         {
-          params: { date: selectedDate, userId: "6831f92869fd4d188f670a72" },
+          params: { date: selectedDate, userId: id },
         }
       );
       setTimeSlots(response.data);
@@ -78,31 +62,6 @@ const BookingPage = () => {
     }
   };
   console.log("timeSlots", timeSlots);
-
-  const handleGoogleAuth = () => {
-    setIsLoading(true);
-    // Simulate auth process
-    setTimeout(() => {
-      setIsAuthenticated(true);
-      setIsLoading(false);
-      setMessage("Successfully connected to Google Calendar!");
-      setMessageType("success");
-    }, 2000);
-  };
-
-  // const fetchTimeSlots = async () => {
-  //   try {
-  //     // Simulate API call
-  //     setIsLoading(true);
-  //     setTimeout(() => {
-  //       setIsLoading(false);
-  //     }, 500);
-  //   } catch (error) {
-  //     console.error("Error fetching time slots:", error);
-  //     setMessage("Error fetching time slots");
-  //     setMessageType("error");
-  //   }
-  // };
 
   const handleBooking = async (e: any) => {
     e.preventDefault();
@@ -133,71 +92,18 @@ const BookingPage = () => {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-blue-600" />
-            </div>
-            <CardTitle className="text-2xl font-bold">
-              Connect Your Calendar
-            </CardTitle>
-            <CardDescription>
-              Connect your Google Calendar to start booking appointments
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              onClick={handleGoogleAuth}
-              className="w-full h-12 text-lg"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Connecting...
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  Connect Google Calendar
-                </div>
-              )}
-            </Button>
-            {message && (
-              <Alert
-                className={`mt-4 ${
-                  messageType === "success"
-                    ? "border-green-200 bg-green-50"
-                    : "border-red-200 bg-red-50"
-                }`}
-              >
-                {messageType === "success" ? (
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                ) : (
-                  <AlertCircle className="h-4 w-4 text-red-600" />
-                )}
-                <AlertDescription
-                  className={
-                    messageType === "success"
-                      ? "text-green-700"
-                      : "text-red-700"
-                  }
-                >
-                  {message}
-                </AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <UserButton
+        appearance={{
+          elements: {
+            userButtonAvatarBox:
+              "w-10 h-10 rounded-full border-2 border-[#32CD32]",
+            userButtonPopoverCard: "bg-gray-100 shadow-lg rounded-lg",
+            userButtonPopoverButton: "text-sm text-blue-700 hover:underline",
+          },
+        }}
+      />
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
